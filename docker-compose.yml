@@ -1,22 +1,30 @@
-version: '3.8' # versión de docker compose
+version: '3.8'
 
-services: # creación del contenedor
-  postgres: # nombre del contenedor postgres
-    image: postgres # imagen postgres última versión
-    restart: always # reiniciar el contenedor
+services:
+  postgres:
+    image: postgres:16
+    restart: always
     ports:
-      - '5432:5432' # puerto de postgres que se ejecutara (ej. cambiar puerto: otro_puerto:5432)
-    environment: # variables de entorno
-      - DATABASE_HOST=127.0.0.1
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=root
-  pgadmin: # nombre del contenedor pgadmin (interfaces de administración de postgres)
-    image: dpage/pgadmin4 # imagen pgadmin última versión
-    environment: # variables de entorno
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:7
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     ports:
-      - '80:80'
-    depends_on: # dependencia del contenedor
-      - postgres # dependencia del contenedor postgres
+      - '81:80'
+    depends_on:
+      - postgres
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
